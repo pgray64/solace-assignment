@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {useDebounce} from "./hooks/useDebounce";
 
 interface Advocate {
   id: number;
@@ -14,42 +15,46 @@ interface Advocate {
 }
 export default function Home() {
   const [advocates, setAdvocates] = useState([] as Advocate[]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([] as Advocate[]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(0);
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 200);
 
   useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
+    loadAdvocates();
+  }, [debouncedSearchTerm]);
+
+  function loadAdvocates(append?: boolean | undefined) {
+    const queryParams = new URLSearchParams({
+      searchQuery: debouncedSearchTerm,
+      page: page + ""
+    })
+    fetch(`/api/advocates?${queryParams}`).then((response) => {
       response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
+        if (append) {
+          setAdvocates([...advocates, ...jsonResponse.data]);
+        } else {
+          setAdvocates(jsonResponse.data);
+        }
+        setPage(page + 1);
       });
     });
-  }, []);
+  }
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = e.target.value;
+    setPage(0);
     setSearchTerm(searchTerm);
-
-    console.log("filtering advocates...");
-    const filteredAdvocates = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.indexOf(searchTerm) > -1 ||
-        (advocate.yearsOfExperience + "" === searchTerm)
-      );
-    });
-
-    setFilteredAdvocates(filteredAdvocates);
   };
 
-  const onClick = () => {
-    console.log(advocates);
-    setFilteredAdvocates(advocates);
+  const onResetClick = () => {
+    setSearchTerm("");
+    setPage(0);
   };
+
+  const loadMore = () => {
+    loadAdvocates(true);
+  }
 
   return (
     <main style={{ margin: "24px" }}>
@@ -62,7 +67,7 @@ export default function Home() {
           Searching for: <span id="search-term">{searchTerm}</span>
         </p>
         <input style={{ border: "1px solid black" }} value={searchTerm} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+        <button onClick={onResetClick}>Reset Search</button>
       </div>
       <br />
       <br />
@@ -79,7 +84,7 @@ export default function Home() {
         </tr>
         </thead>
         <tbody>
-          {filteredAdvocates.map((advocate) => {
+          {advocates.map((advocate) => {
             return (
               <tr key={advocate.id}>
                 <td>{advocate.firstName}</td>
@@ -98,6 +103,7 @@ export default function Home() {
           })}
         </tbody>
       </table>
+      <button onClick={loadMore}>Load More</button>
     </main>
   );
 }
