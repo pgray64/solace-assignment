@@ -31,7 +31,7 @@ const advocates = pgTable("advocates", {
   degreeIdx: index('idx_advocates_degree_trgm')
       .using('gin', sql`${table.degree} gin_trgm_ops`),
   specialtiesSearchIdx: index('idx_advocates_specialties_search_trgm')
-      .using('gin', sql`array_to_string(${table.specialties}, ' ') gin_trgm_ops`),
+      .using('gin', sql`(${table.specialties}::text) gin_trgm_ops`),
   // Years of experience, phone # - standard index
   yearsExpIdx: index('idx_advocates_years_exp').on(table.yearsOfExperience),
   phoneNumberIdx: index('idx_advocates_phone').on(table.phoneNumber),
