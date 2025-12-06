@@ -58,21 +58,23 @@ export default function Home() {
 
   return (
     <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Solace Advocates</h1>
+        <h2 className="text-gray-700">Advocate Search</h2>
+      </div>
+
       <div>
-        <p>Search</p>
-        <p>
+
+        <p className="mb-2">
           Searching for: <span id="search-term">{searchTerm}</span>
         </p>
-        <input style={{ border: "1px solid black" }} value={searchTerm} onChange={onChange} />
-        <button onClick={onResetClick}>Reset Search</button>
+        <input className="border border-gray-200 p-2 rounded" value={searchTerm} onChange={onChange} placeholder="Search by any field"/>
+        <button className="ms-2 p-2 rounded bg-gray-200 hover:bg-gray-100" onClick={onResetClick}>Reset Search</button>
       </div>
       <br />
       <br />
-      <table>
-        <thead>
+      <table className="table-auto md:min-w-full bg-white border border-gray-200">
+        <thead className="bg-gray-50">
         <tr>
           <th>First Name</th>
           <th>Last Name</th>
@@ -103,7 +105,13 @@ export default function Home() {
           })}
         </tbody>
       </table>
-      <button onClick={loadMore}>Load More</button>
+      <div className="w-full justify-center flex mt-4">
+        {advocates.length > 0 ?
+            <button onClick={loadMore}  className="ms-2 p-2 rounded bg-gray-200 hover:bg-gray-100">Load More</button>
+            :
+            <div>No results for search terms</div>}
+      </div>
+
     </main>
   );
 }
