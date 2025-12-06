@@ -43,11 +43,13 @@ export default function Home() {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = e.target.value;
+    setPage(0);
     setSearchTerm(searchTerm);
   };
 
   const onResetClick = () => {
     setSearchTerm("");
+    setPage(0);
   };
 
   const loadMore = () => {
