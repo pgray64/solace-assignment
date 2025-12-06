@@ -7,6 +7,7 @@ import {
   serial,
   timestamp,
   bigint,
+  index,
 } from "drizzle-orm/pg-core";
 
 const advocates = pgTable("advocates", {
@@ -19,6 +20,22 @@ const advocates = pgTable("advocates", {
   yearsOfExperience: integer("years_of_experience").notNull(),
   phoneNumber: bigint("phone_number", { mode: "number" }).notNull(),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => ({
+  // GIN trigram indexes for partial search
+  firstNameIdx: index('idx_advocates_firstname_trgm')
+      .using('gin', sql`${table.firstName} gin_trgm_ops`),
+  lastNameIdx: index('idx_advocates_lastname_trgm')
+      .using('gin', sql`${table.lastName} gin_trgm_ops`),
+  cityIdx: index('idx_advocates_city_trgm')
+      .using('gin', sql`${table.city} gin_trgm_ops`),
+  degreeIdx: index('idx_advocates_degree_trgm')
+      .using('gin', sql`${table.degree} gin_trgm_ops`),
+  phoneNumberIdx: index('idx_advocates_phone_trgm')
+      .using('gin', sql`${table.phoneNumber} gin_trgm_ops`),
+  specialtiesSearchIdx: index('idx_advocates_specialties_search_trgm')
+      .using('gin', sql`array_to_string(${table.specialties}, ' ') gin_trgm_ops`),
+  // Years of experience - standard index
+  yearsExpIdx: index('idx_advocates_years_exp').on(table.yearsOfExperience),
+}));
 
 export { advocates };

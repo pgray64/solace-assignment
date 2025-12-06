@@ -9,6 +9,7 @@ const runMigration = async () => {
 
   const sql = postgres(process.env.DATABASE_URL, { max: 1 });
   const db = drizzle(sql);
+  await sql`CREATE EXTENSION IF NOT EXISTS pg_trgm`
   await migrate(db, { migrationsFolder: "drizzle" });
   await sql.end();
 };
