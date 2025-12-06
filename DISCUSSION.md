@@ -15,3 +15,5 @@ __UI__
 - I would not use a table view for mobile-sized screens
 - Specialties should be a multiselect, to take advantage of above normalized skills
 - I was lazy and use a simple load more button for paging. I would build a full, pretty paging UI with the `[< 1, 2 ... 5, 6 >]` buttons. Or maybe even infinite scroll.
+  - for extreme scaling (millions of rows), the pretty paging buttons UI is a problem (since it needs a total count), as you would have to do a limit-less select on the entire table, which is very expensive due to our full-text searches,
+    even with our indexes. 

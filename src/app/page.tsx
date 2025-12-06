@@ -15,7 +15,6 @@ interface Advocate {
 }
 export default function Home() {
   const [advocates, setAdvocates] = useState([] as Advocate[]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([] as Advocate[]);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
 
@@ -25,14 +24,19 @@ export default function Home() {
     loadAdvocates();
   }, [debouncedSearchTerm]);
 
-  function loadAdvocates() {
+  function loadAdvocates(append?: boolean | undefined) {
     const queryParams = new URLSearchParams({
       searchQuery: debouncedSearchTerm,
+      page: page + ""
     })
     fetch(`/api/advocates?${queryParams}`).then((response) => {
       response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
+        if (append) {
+          setAdvocates([...advocates, ...jsonResponse.data]);
+        } else {
+          setAdvocates(jsonResponse.data);
+        }
+        setPage(page + 1);
       });
     });
   }
@@ -45,6 +49,10 @@ export default function Home() {
   const onResetClick = () => {
     setSearchTerm("");
   };
+
+  const loadMore = () => {
+    loadAdvocates(true);
+  }
 
   return (
     <main style={{ margin: "24px" }}>
@@ -74,7 +82,7 @@ export default function Home() {
         </tr>
         </thead>
         <tbody>
-          {filteredAdvocates.map((advocate) => {
+          {advocates.map((advocate) => {
             return (
               <tr key={advocate.id}>
                 <td>{advocate.firstName}</td>
@@ -93,6 +101,7 @@ export default function Home() {
           })}
         </tbody>
       </table>
+      <button onClick={loadMore}>Load More</button>
     </main>
   );
 }

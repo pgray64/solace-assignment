@@ -12,7 +12,7 @@ interface AdvocateResponse {
   yearsOfExperience: number;
   phoneNumber: string;
 }
-const perPage = 20;
+const perPage = 10;
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
 
@@ -40,8 +40,9 @@ export async function GET(request: Request) {
     }
   }
   const page = parseInt(searchParams.get('page') ?? '0') ?? 0;
+  const offset = page * perPage
 
-  const data = await db.select().from(advocates).where(or(...conditions)).orderBy(desc(advocates.id)).limit(perPage).offset(page) as AdvocateResponse[];
+  const data = await db.select().from(advocates).where(or(...conditions)).orderBy(desc(advocates.id)).limit(perPage).offset(offset) as AdvocateResponse[];
 
   return Response.json({ data });
 }
