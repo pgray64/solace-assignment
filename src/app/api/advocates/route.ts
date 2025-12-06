@@ -21,22 +21,18 @@ export async function GET(request: Request) {
   let conditions = [] as any[];
   if (searchQuery && searchQuery.length > 0) {
     const numQuery = parseInt(searchQuery)
-    const isNumericSearch = !isNaN(numQuery) && numQuery < 200; // otherwise it will try to pass huge numbers to pg and can exceed its max for int comparison
+    const isNumericSearch = !isNaN(numQuery) && numQuery < 200; // otherwise it will try to pass huge numbers to pg for yearsOfExperience and can exceed its max for int comparison
+    const searchPattern = `%${searchQuery}%`
+    conditions = [
+      ilike(advocates.firstName, searchPattern),
+      ilike(advocates.lastName, searchPattern),
+      ilike(advocates.city, searchPattern),
+      ilike(advocates.degree, searchPattern),
+      ilike(advocates.phoneNumber, searchPattern),
+      sql`${advocates.specialties}::text ILIKE ${searchPattern}` // interpolating like this feels so sketchy, but it is safe when done with a variable
+    ]
     if (isNumericSearch) {
-      conditions = [
-          gte(advocates.yearsOfExperience, numQuery),
-      ]
-
-    } else {
-      const searchPattern = `%${searchQuery}%`
-      conditions = [
-        ilike(advocates.firstName, searchPattern),
-        ilike(advocates.lastName, searchPattern),
-        ilike(advocates.city, searchPattern),
-        ilike(advocates.degree, searchPattern),
-        ilike(advocates.phoneNumber, searchPattern),
-        sql`${advocates.specialties}::text ILIKE ${searchPattern}` // interpolating like this feels so sketchy, but it is safe when done with a variable
-      ]
+      conditions.push(gte(advocates.yearsOfExperience, numQuery));
     }
   }
   const page = parseInt(searchParams.get('page') ?? '0') ?? 0;
