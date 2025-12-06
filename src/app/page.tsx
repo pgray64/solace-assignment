@@ -65,47 +65,50 @@ export default function Home() {
 
       <div>
 
-        <p className="mb-2">
-          Searching for: <span id="search-term">{searchTerm}</span>
-        </p>
-        <input className="border border-gray-200 p-2 rounded" value={searchTerm} onChange={onChange} placeholder="Search by any field"/>
-        <button className="ms-2 p-2 rounded bg-gray-200 hover:bg-gray-100" onClick={onResetClick}>Reset Search</button>
+        <div className="flex gap-2 flex-wrap">
+          <input className="border border-gray-200 p-2 rounded" value={searchTerm} onChange={onChange} placeholder="Search by any field"/>
+          <button className="p-2 rounded bg-gray-200 hover:bg-gray-100" onClick={onResetClick}>Reset Search</button>
+        </div>
+
       </div>
       <br />
       <br />
-      <table className="table-auto md:min-w-full bg-white border border-gray-200">
-        <thead className="bg-gray-50">
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
-        </tr>
-        </thead>
-        <tbody>
+      <div className="relative overflow-x-auto bg-gray-50 rounded border-gray-100 border">
+        <table className="table-auto md:w-full text-sm text-left  ">
+          <thead className="border-b">
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>City</th>
+            <th>Degree</th>
+            <th>Specialties</th>
+            <th>Years of Experience</th>
+            <th>Phone Number</th>
+          </tr>
+          </thead>
+          <tbody>
           {advocates.map((advocate) => {
             return (
-              <tr key={advocate.id}>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div key={advocate.id + "_" + s}>{s}</div>
-                  ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
-              </tr>
+                <tr key={advocate.id} className="odd:bg-white even:bg-gray-50 border-b border-gray-100">
+                  <td>{advocate.firstName}</td>
+                  <td>{advocate.lastName}</td>
+                  <td>{advocate.city}</td>
+                  <td>{advocate.degree}</td>
+                  <td>
+                    {advocate.specialties.map((s) => (
+                        <div key={advocate.id + "_" + s}>{s}</div>
+                    ))}
+                  </td>
+                  <td>{advocate.yearsOfExperience}</td>
+                  <td>{advocate.phoneNumber}</td>
+                </tr>
             );
           })}
-        </tbody>
-      </table>
-      <div className="w-full justify-center flex mt-4">
+          </tbody>
+        </table>
+      </div>
+
+      <div className="w-full justify-center flex mt-8">
         {advocates.length > 0 ?
             <button onClick={loadMore}  className="ms-2 p-2 rounded bg-gray-200 hover:bg-gray-100">Load More</button>
             :
