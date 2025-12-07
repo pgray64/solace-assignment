@@ -12,6 +12,7 @@ __Architecture/Back-end__
 
 __UI__
 - I would switch to a UI framework like DaisyUI, that has nice looking, pre-made components (especially for the table)
+- I didn't add a loading indicator - I would add a skeleton-style loading indicator
 - I would not use a table view for mobile-sized screens - some sort of tile-based UI instead
 - Specialties should be a multiselect, to take advantage of above normalized specialties. Might even build some sort of advanced filtering UI
 - I would build a full, pretty paging UI with the `[< 1, 2 ... 5, 6 >]` buttons. Or maybe even infinite scroll.

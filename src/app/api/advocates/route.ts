@@ -38,7 +38,17 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get('page') ?? '0') ?? 0;
   const offset = page * perPage
 
-  const data = await db.select().from(advocates).where(or(...conditions)).orderBy(desc(advocates.id)).limit(perPage).offset(offset) as AdvocateResponse[];
+  const rawData = await db.select().from(advocates).where(or(...conditions)).orderBy(desc(advocates.id)).limit(perPage).offset(offset) ?? [];
+  const data = rawData.map((row: any) => ({
+    id: row.id,
+    firstName: row.firstName,
+    lastName: row.lastName,
+    city: row.city,
+    degree: row.degree,
+    specialties: row.specialties,
+    yearsOfExperience: row.yearsOfExperience,
+    phoneNumber: row.phoneNumber,
+  } as AdvocateResponse))
 
   return Response.json({ data });
 }
